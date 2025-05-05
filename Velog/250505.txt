@@ -1,0 +1,82 @@
+// 2025_05_05 월요일
+
+오늘은 Redux와 Recoil에 대해 정리하고 비교해보는 시간을 가져보려고 한다.
+
+Redux 복습
+Redux란 어플리케이션의 상태(state)를 하나의 중앙 저장소(store)에서 관리할 수 있게 해주는 라이브러리이다. 리액트 컴포넌트가 dispatch로 액션을 보내면, 리듀서가 상태를 바꿔서 스토어를 업데이트하고, 리액트가 새로운 상태로 리렌더링하는 방식으로 동작한다.
+
+1. Recoil
+Recoil이란 Facebook이 만든 React 친화적인 상태 관리 라이브러리이다. 상태 단위를 atom(기본단위)와 selector(파생 상태)로 나눠서 필요한 컴포넌트에서만 사용할 수 있도록 한다. React의 useState, useContext의 한계를 보완하고, 컴포넌트 간에 유연하고 세분화된 전역 상태 관리를 가능하게 한다.
+
+useState의 한계
+useState는 컴포넌트 내부 상태 관리에 특화되어 있는데, 앱이 커지는 경우 한계에 부딪히게 된다.
+
+1) 상태 공유 어려움 : Prop drilling 발생
+2) 복잡한 상태 트리 : 상위 -> 중간 -> 하위 컴포넌트로 상태를 전달하기 때문에 유지보수가 어려워짐.
+3) 전역 상태
+
+useContext의 한계
+useContext는 리액트에서 전역 상태처럼 공유할 수 있는 방법이지만, useState와 동일하게 규모가 커지면 한계를 확인할 수 있다.
+
+1) 모든 컴포넌트가 다시 렌더링 된다.
+
+Context의 값이 바뀌면, 그 값을 사용하는 모든 하위 컴포넌트가 전부 리렌더링 된다.
+상태가 조금만 바뀌어도 전부 리렌더링 되기 때문에 앱이 커지면 성능의 저하가 발행한다.
+2) 단일 Context
+
+여러 상태를 하나의 Context에 담게 되면 Context는 자연스럽게 복잡해지게 된다.
+반대로 여러 Context를 나눠서 만들면, Provider가 중첩되어 트리 구조가 복잡해진다.(Provider hell)
+3) 상태 변경(setState) 로직이 흩어진다.
+
+useContext로 가져온 값은 읽기에는 좋지만, 상태 변경을 하려면 추가 구조가 필요하다.
+상태 변경을 위한 함수(setter)를 따로 넘기거나, dispatch 패턴을 직접 만들어야해서 구조가 복잡해진다.
+Recoil은 이와 같은 문제들을 해결할 수 있다. atom 단위로 부분 리렌더링, 상태 분리를 할 수 있고 비동기/파생 상태는 selector로 편리하게 처리할 수 있다. 주요 개념에 대해 다시 정리하고 이어서 Redux와 비교해보자.
+
+2. Recoil 주요 개념
+atom
+상태의 최소 단위(React의 useState와 비슷하다.)
+
+selector
+파생 상태(계산된 값 또는 비동기 값 처리 가능)
+
+RecoilRoot
+Recoil 상태를 감싸는 최상위 컴포넌트(Context와 비슷하다.)
+
+아래는 사용 예시이다.
+
+// atoms/userAtom.js
+import { atom } from 'recoil';
+
+export const userState = atom({
+  key: 'userState',
+  default: { name: '', loggedIn: false },
+});
+아래는 컴포넌트 내부 파일의 예시이다.
+
+// 컴포넌트 내부
+import { useRecoilState } from 'recoil';
+import { userState } from './atoms/userAtom';
+
+function Profile() {
+  const [user, setUser] = useRecoilState(userState);
+
+  return <div>{user.name}</div>;
+}
+
+// userSate를 지역상태처럼 사용할 수 있음
+3. Recoil의 장,단점
+1) 장점
+
+useState, useEffect처럼 자연스럽게 사용할 수 있다.
+여러 atom으로 상태를 나누고 모듈화할 수 있다.
+selector로 계산된 값이나 비동기 요청을 처리할 수 있다.
+의존성 기반 렌더링을 하기 때문에 필요한 것만 리렌더할 수 있다.
+2) 단점
+
+페이스북에서 만들었지만 2025년 현재 베타 단계이므로 아직은 실험적으로 평가받고있다.
+Redux에 비해 검증된 사례나 도구가 부족하다
+React 전용이기때문에 다른 프레임워크와 연동이 어렵다.
+4. 비교 및 정리
+Recoil는 React에 특화되어있으며, 간단하고 유연하고, 컴포넌트 중심의 상태관리가 가능하다. Redux는 강력하고 구조적이며 대규모 앱에 적합하고, 검증된 솔루션이다.
+
+그래서 상황에 따라 작은 프로젝트나 상태 흐름이 단순하다면, 그리고 빠른 시작을 생각한다면 Recoil이 더 좋을 것 같다. 반면에 대규모 프로젝트나 다양한 미들웨어가 필요한 경우에는 Redux가 더 적절할 것 같다.
