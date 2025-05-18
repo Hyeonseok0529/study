@@ -1,0 +1,75 @@
+// 2025_05_18 일요일
+
+오늘은 어플리케이션의 성능 측정에 대해 알아보려고 한다.
+
+1. 어플리케이션 성능 측정
+웹 어플리케이션의 성능 측정은 해당 웹사이트가 얼마나 빠르고 부드럽게 작동하는지 수치로 파악할 수 있는 과정이다. 체감 속도, 반응성, 로딩시간 등을 측정할 수 있다. 사용자 이탈과 직접적인 연관이 있고, SEO와도 관련이 있다. 또한 모바일이나 저사양 기기에서도 성능을 보장하기 위해 어플리케이션의 성능 측정은 필수이다.
+
+2. 측정항목
+1) FCP(First Contentful Paint) : 첫 콘텐츠가 화면에 나타나는 시간
+2) LCP(Largest Contentful Paint) : 가장 큰 콘텐츠가 로딩되는 시간
+3) TTI(Time To Interactive) : 사용자와의 완전한 상호작용이 가능한 시점
+4) TBT(Total Blocking Time) : 페이지가 멈춘 시간(JS 처리 중 다른 작업이 못 되는 시간)
+5) CLS(Cumulative Layout Shift) : 레이아웃이 갑자기 바뀌는 정도(콘텐츠가 툭 튀거나 흔들릴 때)
+
+3. 측정 도구
+Lighthouse
+크롬 개발자 도구에 내장되어있는 측정도구이다. F12 => Lighthouse 탭 => 분석 시작으로 분석할 수 있으며 성능, 접근성, SEO 등을 분석해서 점수를 출력한다. 또한 개선방법을 자동으로 알려주어 추후 개발에 참고할 수 있는 특징이 있다.
+
+크롬 개발자 도구
+F12 => Performance 탭에서 네트워크 요청, 자바스크립트 실행 시간, 렌더링 단계 등을 시간 순으로 확인할 수 있다. 리플로우, 리페인트, 레이아웃 스로틀링도 여기서 확인이 가능하다.
+
+WebPageTest
+전 세계 서버에서 실측 테스트가 가능하다. 속도/응답시간을 비교하고, LCP/TTI/CLS등을 세부적으로 분석할 수 있는 특징이 있다.
+
+PageSpeed Insights
+구글에서 제공하는 측정도구이다. URL을 입력하여 웹 성능 점수를 알 수 있다. 모바일과 데스크톱의 성능을 분리해서 확인할 수 있는 특징이 있다.
+
+4. 성능 개선
+성능이 측정됨에 따라 점수가 낮게 측정되는 부분은 개선이 필요할 것이다. 이에 대한 4가지 예시를 정리해보자.
+
+(문제 : 해결방법)
+1) 로딩이 오래 걸릴 때 : 이미지 압축, lazy loading, 코드 스플리팅
+2) 자바스크립트가 무거울 때 : Webpack 최적화, tree-shaking, 불필요한 라이브러리 제거
+3) TTI가 늦을 때 : 인터렉션 전에 필요한 최소 코드만 로드(critical rendering path 최소화)
+4) CLS가 높을 때 : 이밎, 광고 등에 width/height 명시, 폰트 지연 로딩 방지
+
+Lighthouse 사용
+나는 Lighthouse를 성능측정도구로 처음 접하게 되어 사용하고 있다. 그래서 병목 현상이 생겼을 때 해결할 수 있는 과정을 조금 더 알아보려고 한다.
+
+먼저 점수가 낮은 영역을 확인해야 한다. Opportunities / Diagnostics 항목을 보면 병목의 원인이 구체적으로 나와있다.
+
+Reduce unused JavaScript : JS가 너무 많거나, 안 쓰는 코드가 있는 경우
+Defer offscreen images : 화면에 안 보이는 이미지까지 먼저 로딩 중일 때
+Minimize main-thread work : JS가 메인 스레드를 너무 오래 점유할 때
+Serve images in next-gen formats : 이미지 포맷이 너무 무거울 때
+항목별 해결
+1) JavaScript 병목
+
+코드 스플리딩 : 필요할 때만 불러오는방식(React.lazy, dynamic import)
+불필요한 라이브러리 제거 : lodash 전체 import -> 필요한 함수만
+Tree-shaking 활성화 : Webpack 설정 확인
+비동기 로딩(defer, async) : <script defer>,React Suspense
+2) 이미지 최적화 병목
+
+이미지 압축 : TinyPNG, Squoosh 등 활용
+차세대 포맷 사용 : WebP, AVIF 등
+Lazy loading: <img loading ="lazy"> 또는 라이브러리 적용
+Responsive image: srcset 사용으로 해상도별 로딩
+3) 렌더링 차단 리소스(CSS/JS)
+페이지 렌더링 전에 리소스를 다 받아야해서 느려지는 현상
+
+Critical CSS 인라인 : 첫 화면에 필요한 CSS만 <style> 삽입
+CSS,JS 파일 최소화 및 압축 : Webpack, Terser, PurgeCSS 사용
+비필수 리소스 지연 로딩 : async/defer 사용
+4) CLS
+
+이미지, iframe에 width/height 고정
+폰트 지연 로딩 방지: font-display:swap
+광고나 동적 콘텐츠는 미리 placeholder 설정
+5) 네트워크 요청 병목
+API 응답 지연, 큰 JSON, 외부 리소스 로딩 지연 등
+
+API 응답 최소화 : 꼭 필요한 데이터만 보내기
+CDN 사용 : JS/CSS/이미지 빠르게 배포
+캐싱 설정: HTTP 캐시 활용(Cache-Control, ETag)
