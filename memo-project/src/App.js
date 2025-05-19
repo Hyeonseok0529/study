@@ -19,20 +19,43 @@ function App() {
     },
   ]);
 
-const [selectedMemoIndex, setSelectedMemoIndex] = useState(0);
+  const [selectedMemoIndex, setSelectedMemoIndex] = useState(0);
 
-const setMemo = (newMemo) => {
-  const newmemos = [...memos];
+  const setMemo = (newMemo) => {
+    const newmemos = [...memos];
 
-  newmemos[selectedMemoIndex] = newMemo;
-  setMemos(newmemos);
+    newmemos[selectedMemoIndex] = newMemo;
+    setMemos(newmemos);
+  };
 
+  const addMemo = () => {
+    const now = new Date().getTime();
+    setMemos([
+      ...memos,
+      {
+        title: 'Untitled',
+        content: '',
+        createdAt: now,
+        updatedAt: now,
+      },
+    ]);
+    setSelectedMemoIndex(memos.length);
+  };
+
+const deleteMemo = () => {
+  memos.splice
 }
 
   return (
     <div className="App">
-      <SideBar memos={memos} setSelectedMemoIndex={setSelectedMemoIndex}/>
-      <MemoContainer memo={memos[selectedMemoIndex]} setMemo={setMemo}/>
+      <SideBar
+        memos={memos}
+        addMemo={addMemo}
+        selectedMemoIndex={selectedMemoIndex}
+        setSelectedMemoIndex={setSelectedMemoIndex}
+        deleteMemo={deleteMemo}
+      />
+      <MemoContainer memo={memos[selectedMemoIndex]} setMemo={setMemo} />
     </div>
   );
 }
