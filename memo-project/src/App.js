@@ -42,9 +42,15 @@ function App() {
     setSelectedMemoIndex(memos.length);
   };
 
-const deleteMemo = () => {
-  memos.splice
-}
+  const deleteMemo = (index) => {
+    const newMemos = [...memos];
+
+    newMemos.splice(index, 1);
+    setMemos(newMemos);
+    if(index === selectedMemoIndex) {
+      setSelectedMemoIndex(0);
+    }
+  };
 
   return (
     <div className="App">
