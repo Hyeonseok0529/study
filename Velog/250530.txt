@@ -1,0 +1,50 @@
+// 2025_05_30 금요일
+
+오늘은 position에 대해 복습해보는 시간을 가져보자!
+
+position
+CSS에서 빠질 수 없는 속성 position은 요소의 위치를 지정하는 방법을 설정하는 데 사용된다. top,right,left,bottom과 함께 사용되어 요소가 어디에 위치할지를 결정한다.
+
+1. static
+요소의 position의 기본값인 static 속성이다. 요소가 일반적인 문서의 흐름에 따라 배치된다. top,right,left,bottom이 무시되며, 다른 position 요소처럼 겹치거나 이동하지 않는 특징이 있다.
+
+2. relative
+요소가 자기 자신의 원래 위치를 기준으로 이동하는 속성이다. 문서의 흐름 상 자리를 유지하며, top,right,left,bottom을 사용해 원래 위치에서 상대적으로 이동할 수 있는 특징이 있다. 종종 absolute 자식 요소의 기준(부모 요소)로 사용되기도 한다.
+
+3. absolute
+요소가 문서의 흐름에서 제거되며, 가장 가까운 position이 relative, absolute, fixed, sticky인 조상을 기준으로 배치된다. 나를 가르쳐주셨던 강사님의 설명에 따르면 absolute는 아이언맨(요소)이 공중으로 날아오르는 것과 같다고 하셨다.
+다른 속성들도 마찬가지긴 하지만, absolute를 쓸 때는 신중하는 것이 좋다. 나의 첫 프로젝트에서 absolute를 너무 남발해서 쓰는 바람에 변경및 수정이 너무 어려웠다. 이 요소가 꼭 absolute를 써야만 하는 것인지 판단을 해보는 연습을 해보는 것도 좋은 방법이 되겠다.
+
+4. fixed
+요소가 브라우저 창(뷰포트)을 기준으로 고정하는 요소이다. 스크롤을 해도 항상 같은 위치에 표시되며, 네비게이션 바나 맨 위로 갈 수 있도록 하는 TOP 버튼에 많이 사용되는 속성이다.
+
+5. sticky
+요소가 스크롤 위치에 따라 relative -> fixed로 전환된다. 지정한 거리만큼 스크롤되면 fixed처럼 동작하며, 부모 컨테이너를 벗어나면 다시 relative처럼 동작하게 되는 특징이 있다.
+
+주의사항
+1) absolute 는 기준 요소(relative 등)이 필요하다. absolute 요소는 가장 가까운 position이 설정된 조상 요소를 기준으로 위치한다. 만약 기준이 될 조상이 없는 경우 body를 기준으로 위치한다.
+
+.parent {
+  position: relative; /* 자식 absolute 기준이 됨 */
+}
+.child {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+2) relative: 공간은 유지하면서 이동
+relative는 이동해도 원래 자리의 공간을 차지한다. 따라서 레이아웃을 유지하면서 위치를 살짝 조정할 때 유용하다.
+
+3) fixed는 항상 화면 기준!
+스크롤되어도 항상 고정된다. 단, 모바일 환경에서는 뷰포트 고정이 잘 되지 않거나 깜빡임 현상이 있을 수 있으니 테스트가 필요하다.
+
+4) z-index는 position있는 요소에만 적용 가능
+z-index는 기본적으로 position이 static이면 무시된다. 따라서 relative, absolute, fixed, sticky 요소에만 적용 가능하다.
+
+5) absolute 요소는 문서의 흐름을 깨뜨린다.
+원래 흐름에서 빠져나오기 때문에 다른 요소들이 그 자리를 채우게 된다. 이에 따라 레이아웃이 깨지는 문제가 발생할 수 있어 주의가 필요하다.
+
+6) position: absolute로 100% width를 주면, 기준 요소의 padding은 포함하지 않는다. 만약 필요한 경우 width: 100vw 또는 inset: 0 을 활용하거나, box-sizing: border-box 조정이 필요하다.
+
+profile
+양현석
