@@ -1,7 +1,6 @@
 프로세스 스케줄링
 선점 RR, SRT, MLQ, MLFQ
-비선점 FCFS, SJF, HRN, 우선순위 기한부
+비선점 FCFS, SJF, HRN, 우선순위, 기한부
+기아현상 : SRT, MLQ, SJF, 우선순위
+에이징기법 : HRN, MLFQ
 
-SRT, MLQ, SJF, 우선순위 : 기아현상
-프로세스가 프로세서를 할당받지 못하는 현상
-에이징 기법 : MLFQ , RR , HRN
